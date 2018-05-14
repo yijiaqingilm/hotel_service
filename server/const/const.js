@@ -1,0 +1,10 @@
+const STATUS_CODE = {
+  SUCCESS: 200,
+  404: 404,
+  SERVER_ERROR: 500
+}
+const PAGESIZE = 10
+export {
+  STATUS_CODE,
+  PAGESIZE
+}

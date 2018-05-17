@@ -5,7 +5,7 @@
   "author": "yijiaqing <yijq@maiya.com>",
   "private": true,
   "scripts": {
-    "dev": "backpack dev supervisor",
+    "dev": " backpack dev supervisor",
     "build": "nuxt build && backpack build",
     "start": "cross-env NODE_ENV=production host=172.27.0.4 node build/main.js",
     "precommit": "npm run lint",
@@ -26,6 +26,7 @@
     "log4js": "^2.5.3",
     "morgan": "^1.9.0",
     "mysql": "^2.15.0",
+    "mysql2": "^1.5.3",
     "nuxt": "^1.0.0-rc3",
     "sequelize": "^4.37.7",
     "source-map-support": "^0.4.15"

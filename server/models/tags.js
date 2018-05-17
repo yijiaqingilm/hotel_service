@@ -16,6 +16,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true,
       unique: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'tags'

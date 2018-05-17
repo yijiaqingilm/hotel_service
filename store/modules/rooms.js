@@ -12,7 +12,9 @@ let state = {
   tagList: [],
   tag: {},
   attrList: [],
-  attr: {}
+  attr: {},
+  imgList: [],
+  img: {}
 }
 let getters = {}
 let actions = {
@@ -90,6 +92,25 @@ let actions = {
   },
   [native.doSysRoomAttrAdd] ({state}, refs) {
     return applyClientMiddleware(api.doSysRoomAttrAdd)(refs)
+  },
+
+  [native.doSysRoomImgList] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomImgList)(refs)
+  },
+  [native.doSysRoomImgInfo] ({state}, refs) {
+    let {imgId} = refs
+    if (!state.img[imgId]) {
+      return applyClientMiddleware(api.doSysRoomImgInfo)(refs)
+    }
+  },
+  [native.doSysRoomImgEdit] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomImgEdit)(refs)
+  },
+  [native.doSysRoomImgDel] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomImgDel)(refs)
+  },
+  [native.doSysRoomImgAdd] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomImgAdd)(refs)
   }
 }
 let mutations = {
@@ -191,7 +212,9 @@ let mutations = {
   [mutationNames.doSysRoomAttrInfo_failure] (state, {error}) {},
 
   [mutationNames.doSysRoomAttrEdit_request] (state, {refs}) {},
-  [mutationNames.doSysRoomAttrEdit_success] (state, {data}) {
+  [mutationNames.doSysRoomAttrEdit_success] (state, {data, refs}) {
+    let {attrId} = refs
+    Vue.delete(state.attr, attrId)
   },
   [mutationNames.doSysRoomAttrEdit_failure] (state, {error}) {},
 
@@ -204,6 +227,36 @@ let mutations = {
   [mutationNames.doSysRoomAttrAdd_success] (state, {data}) {
   },
   [mutationNames.doSysRoomAttrAdd_failure] (state, {error}) {},
+  /* ---img--- */
+  [mutationNames.doSysRoomImgList_request] (state, {refs}) {},
+  [mutationNames.doSysRoomImgList_success] (state, {data}) {
+    state.imgList = data
+  },
+  [mutationNames.doSysRoomImgList_failure] (state, {error}) {},
+
+  [mutationNames.doSysRoomImgInfo_request] (state, {refs}) {},
+  [mutationNames.doSysRoomImgInfo_success] (state, {data, refs}) {
+    let {imgId} = refs
+    Vue.set(state.img, imgId, data)
+  },
+  [mutationNames.doSysRoomImgInfo_failure] (state, {error}) {},
+
+  [mutationNames.doSysRoomImgEdit_request] (state, {refs}) {},
+  [mutationNames.doSysRoomImgEdit_success] (state, {data, refs}) {
+    let {imgId} = refs
+    Vue.delete(state.img, imgId)
+  },
+  [mutationNames.doSysRoomImgEdit_failure] (state, {error}) {},
+
+  [mutationNames.doSysRoomImgDel_request] (state, {refs}) {},
+  [mutationNames.doSysRoomImgDel_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomImgDel_failure] (state, {error}) {},
+
+  [mutationNames.doSysRoomImgAdd_request] (state, {refs}) {},
+  [mutationNames.doSysRoomImgAdd_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomImgAdd_failure] (state, {error}) {},
 }
 
 export {

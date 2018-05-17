@@ -31,6 +31,14 @@ module.exports = function(sequelize, DataTypes) {
         model: 'roomattr',
         key: 'rmattrId'
       }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'bed'

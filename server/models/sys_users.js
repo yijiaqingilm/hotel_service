@@ -27,6 +27,14 @@ module.exports = function(sequelize, DataTypes) {
         model: 'sys_roles',
         key: 'rolesId'
       }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'sys_users'

@@ -1,4 +1,5 @@
 import dbAppClient from '../db/index'
+import { SysUser, SysRole, SysRule } from '../db/AuthorModel'
 import queryMiddleware from '../middleware/queryMiddleware'
 import transactionsMiddleware from '../middleware/transactionsMiddleware'
 import { setPageAndSize } from '../lib/utils'
@@ -95,6 +96,12 @@ const sys_userService = {
   },
 
   roleList (page, size) {
+    console.log('test')
+    SysRole.findAll().then((data) => {
+      console.log('data', data)
+    }).catch((err) => {
+      console.log('err', err)
+    })
     return poolQueryMiddleware(`SELECT roles.*,GROUP_CONCAT(rules.rulesId) as ruleIds,GROUP_CONCAT(rules.name)as ruleNames  from sys_roles as roles
       LEFT JOIN sys_roles_rules as s_r_r on roles.rolesId=s_r_r.roles_id 
       LEFT JOIN sys_rules as rules on s_r_r.rules_id=rules.rulesId GROUP BY roles.rolesId limit ?,?`, setPageAndSize(page, size))

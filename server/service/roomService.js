@@ -2,39 +2,13 @@ import dbAppClient from '../db/index'
 import queryMiddleware from '../middleware/queryMiddleware'
 import transactionsMiddleware from '../middleware/transactionsMiddleware'
 import { setPageAndSize } from '../lib/utils'
-import { PAGESIZE } from '../const/const'
+import { PAGESIZE, room_attr_status } from '../const/const'
+import * as Model from '../db/AuthorModel'
+import Sequelize from 'sequelize'
+import sequelize from '../db/sequelize'
 
-/**
- * 根据attr传入的参数返回 sql和sql所需的参数
- * @param p
- * @isPaging 是否分页
- * @returns {{sql: string, params: Array}}
- */
-let getAttrQuerySQLAndParams = (p, isPaging = false) => {
-  let {name, booking, status = 1, page, size = 10} = p
-  let sql = ''
-  let params = []
-  if (name) {
-    sql += ' and attr.name like ? '
-    params.push(`%${name}%`)
-  }
-  if (booking) {
-    sql += ' and attr.minbooking<=? and attr.maxbooking>=? '
-    params.push(booking, booking)
-  }
-  if (status) {
-    sql += ' and attr.status=? '
-    params.push(status)
-  }
-  if (isPaging && page && size) {
-    sql += ' limit ?,?'
-    params.push(...setPageAndSize(page, size))
-  }
-  return {
-    sql,
-    params
-  }
-}
+const Op = Sequelize.Op
+
 let poolQueryMiddleware = queryMiddleware(dbAppClient)
 const roomService = {
   faceTotal (p) {
@@ -73,182 +47,167 @@ const roomService = {
     faces = faces.map((row) => [row.name, row.value, row.icon])
     return poolQueryMiddleware('insert into face(name,value,icon) values ?', [faces])
   },
-  roomTypeTotal (p) {
-    let {name = ''} = p
-    return poolQueryMiddleware('select COUNT(*) as count from roomtype  where name like ?', [`%${name}%`])
-  },
   roomTypeList (p) {
-    let {page, size, name} = p
-    let sql = 'select * from roomtype '
-    let params = []
+    let {page, size, name = ''} = p
+    let [offset, limit] = setPageAndSize(page, size)
+    let where = {}
     if (name) {
-      sql += ' where name like ?'
-      params.push(`%${name}%`)
+      where.name = {[Op.like]: `%${name}%`}
     }
-    sql += ' limit ?, ?'
-    params.push(...setPageAndSize(page, size))
-    return poolQueryMiddleware(sql, params)
+    return Model.RoomType.findAndCountAll({
+      where,
+      offset,
+      limit
+    })
   },
   getRoomTypeById (roomTypeId) {
-    return poolQueryMiddleware('select * from roomtype where roomTypeId=?', [roomTypeId])
+    return Model.RoomType.findById(roomTypeId)
   },
   delRoomTypeByIds (roomTypeIds) {
-    return poolQueryMiddleware('delete from roomtype where roomTypeId in (?)', roomTypeIds.join(','))
+    return Model.RoomType.destroy({
+      where: {
+        roomTypeId: {
+          [Op.in]: roomTypeIds
+        }
+      }
+    })
   },
   addRoomType (roomType) {
-    return poolQueryMiddleware('insert into roomtype set ?', roomType)
+    return Model.RoomType.create(roomType)
   },
   updateRoomType (roomType) {
     let {roomTypeId, name} = roomType
-    return poolQueryMiddleware('update roomtype set name=? where roomTypeId=?', [name, roomTypeId])
-  },
-
-  tagTotal (p) {
-    let {tagName} = p
-    return poolQueryMiddleware('select COUNT(*) as count from tags  where tagName like ?', [`%${tagName}%`])
+    return Model.RoomType.update({name}, {
+      where: {
+        roomTypeId
+      }
+    })
   },
   tagList (p) {
     let {page, size, tagName} = p
-    let sql = 'select * from tags '
-    let params = []
+    let where = {}
     if (tagName) {
-      sql += ' where tagName like ?'
-      params.push(`%${tagName}%`)
+      where.tagName = {[Op.like]: `%${tagName}%`}
     }
-    sql += ' limit ?, ?'
-    params.push(...setPageAndSize(page, size))
-    return poolQueryMiddleware(sql, params)
+    let [offset, limit] = setPageAndSize(page, size)
+    return Model.Tag.findAndCountAll({
+      where,
+      offset,
+      limit
+    })
   },
   getTagById (tagId) {
-    return poolQueryMiddleware('select * from tags where tagId=?', [tagId])
+    return Model.Tag.findById(tagId)
   },
   delTagByIds (tagIds) {
-    return poolQueryMiddleware('delete from tags where tagId in (?)', tagIds.join(','))
+    return Model.Tag.destroy({
+      where: {
+        tagId: {
+          [Op.in]: tagIds
+        }
+      }
+    })
   },
   addTag (tag) {
-    return poolQueryMiddleware('insert into tags set ?', tag)
+    return Model.Tag.create(tag)
   },
   updateTag (tag) {
     let {tagId, tagName, desc} = tag
-    return poolQueryMiddleware('update tags set tagName=?,tags.desc=? where tagId=?', [tagName, desc, tagId])
-  },
-
-  imgTotal () {
-    return poolQueryMiddleware('select COUNT(*) as count from img ')
+    return Model.Tag.update({tagName, desc}, {
+      where: {
+        tagId: tagId
+      }
+    })
   },
   imgList (p) {
     let {page, size} = p
-    return poolQueryMiddleware('select * from tags limit ?, ?', setPageAndSize(page, size))
+    let [offset, limit] = setPageAndSize(page, size)
+    return Model.Img.findAndCountAll({
+      offset,
+      limit
+    })
   },
   getImgById (imgId) {
-    return poolQueryMiddleware('select * from img where imgId=?', [imgId])
+    return Model.Img.findById(imgId, {
+      attributes: ['title', 'url', 'imgId']
+    })
   },
   delImgByIds (imgIds) {
-    return poolQueryMiddleware('delete from img where imgId in (?)', imgIds.join(','))
+    return Model.Img.destroy({
+      where: {
+        imgId: {
+          [Op.in]: imgIds
+        }
+      }
+    })
   },
   addImg (img) {
-    return poolQueryMiddleware('insert into img set ?', img)
+    return Model.Img.create(img)
   },
   updateImg (img) {
     let {imgId, title, url} = img
-    return poolQueryMiddleware('update img set title=?,url=? where imgId=?', [title, url, imgId])
+    return Model.Img.update({title, url}, {
+      where: {
+        imgId
+      }
+    })
   },
-
-  attrTotal (p) {
-    let sqlInit = 'select COUNT(*) as count from roomattr as attr where 1=1 '
-    let {params, sql} = getAttrQuerySQLAndParams(p)
-    return poolQueryMiddleware(sqlInit + sql, params)
-  },
-  async attrList (p) {
-    let sqlInit = 'select * from roomattr attr where 1=1 '
-    let {params, sql} = getAttrQuerySQLAndParams(p, true)
-    let result = {}
-    await poolQueryMiddleware(sqlInit + sql, params).then((data) => {
-      result = data.data
-      result.forEach((row) => {
-        Promise.all([
-          poolQueryMiddleware('select * from layout where attrId=?', [row.rmattrId]),
-          poolQueryMiddleware('select * from bed where attrId=?', [row.rmattrId]),
-        ]).then((values) => {
-          let [layout, bed] = values
-          row.layout = layout
-          row.bed = bed
-        })
-      })
+  attrList (p) {
+    let {page, size = 10} = p
+    let [offset, limit] = setPageAndSize(page, size)
+    return Model.RoomAttr.findAndCountAll({
+      offset,
+      limit,
+      where: {
+        status: {
+          [Op.not]: room_attr_status.delete
+        }
+      },
+      attributes: ['rmattrId', 'size', 'name', 'minbooking', 'maxbooking', 'floorRange', 'status'],
+      include: [
+        {
+          model: Model.Layout,
+          attributes: ['name', 'quantity']
+        },
+        {
+          model: Model.Bed,
+          attributes: ['name', 'width', 'height', 'quantity']
+        },
+        {
+          model: Model.Face,
+          attributes: ['name', 'value', 'icon'],
+          through: {
+            attributes: [],
+          }
+        }
+      ],
+      distinct: true
     })
   },
   getAttrById (attrId) {
-    return poolQueryMiddleware('select attr.* from roomattr as attr where rmattrId=?', [attrId])
+    return Model.RoomAttr.findById(attrId, {
+      include: [
+        {
+          model: Model.Layout,
+          attributes: ['name', 'quantity']
+        },
+        {
+          model: Model.Bed,
+          attributes: ['name', 'width', 'height', 'quantity']
+        },
+        {
+          model: Model.Face,
+          attributes: ['name', 'value', 'icon', 'faceId'],
+          through: {
+            attributes: [],
+          }
+        }
+      ]
+    })
   },
   delAttrByIds (attrIds) {
     return poolQueryMiddleware('update roomattr set status=2 where rmattrId in (?)', attrIds.join(','))
   },
-
-  /**
-   * 根据attrid 插入多条bed数据
-   * @param attrId
-   * @param bedArr
-   * @returns {function(*): Promise<any>}
-   */
-  addBedByAttrId: (attrId, bedArr) => (conn) => new Promise((resolve, reject) => {
-    if (bedArr.length > 0) {
-      let bed = []
-      bedArr.forEach((row) => {
-        let {name, width, height, quantity} = row
-        bed.push([name, width, height, quantity, attrId])
-      })
-      conn('insert into bed(name,width,height,quantity,attrId) values ?', [bed]).then((data) => {
-        resolve({data: ''})
-      }).catch((error) => {
-        reject(error)
-      })
-    } else {
-      resolve({data: ''})
-    }
-  }),
-  /**
-   * 根据attrid 插入多条layout数据
-   * @param attrId
-   * @param layoutArr
-   * @returns {function(*): Promise<any>}
-   */
-  addLayoutByAttrId: (attrId, layoutArr) => (conn) => new Promise((resolve, reject) => {
-    if (layoutArr.length > 0) {
-      let layout = []
-      layoutArr.forEach((row) => {
-        let {name, quantity} = row
-        layout.push([name, quantity, attrId])
-      })
-      conn('insert into layout(name,quantity,attrId) values ?', [layout]).then((data) => {
-        resolve({data: ''})
-      }).catch((error) => {
-        reject(error)
-      })
-    } else {
-      resolve({data: ''})
-    }
-  }),
-  /**
-   * 根据attrid 插入多条face_roomattr数据
-   * @param attrId
-   * @param faceIds
-   * @returns {function(*): Promise<any>}
-   */
-  addRoomattr2face: (attrId, faceIds) => (conn) => new Promise((resolve, reject) => {
-    if (faceIds.length > 0) {
-      let roomattr_face_arr = []
-      faceIds.forEach((face_id) => {
-        roomattr_face_arr.push([attrId, face_id])
-      })
-      conn('insert into face_roomattr(roomattrId,faceId) values ?', [roomattr_face_arr]).then((data) => {
-        resolve({data: ''})
-      }).catch((error) => {
-        reject(error)
-      })
-    } else {
-      resolve({data: ''})
-    }
-  }),
   /**
    * // 所需参数：houseSize,name,minbooking,maxbooking,floorRange
    * // 所需对象：beds 一对多：
@@ -260,23 +219,63 @@ const roomService = {
    * @param attr
    * @returns {Promise<any>}
    */
-  async addAttr (attr) {
+  addAttr (attr) {
     let {beds, layouts, faces, ...rest} = attr
-    let attrId = -1
-    await poolQueryMiddleware('insert into roomattr set ?', rest).then((data) => {
-      attrId = data.insertId
+    return sequelize.transaction(async (t) => {
+      let {rmattrId} = await Model.RoomAttr.create(rest, {transaction: t})
+      beds = beds.map((bed) => Object.assign({attrId: rmattrId}, bed))
+      layouts = layouts.map((layout) => Object.assign({attrId: rmattrId}, layout))
+      faces = faces.map((faceId) => ({roomattrId: rmattrId, faceId}))
+      return Promise.all([
+        Model.Bed.bulkCreate(beds, {transaction: t}),
+        Model.Layout.bulkCreate(layouts, {transaction: t}),
+        Model.Face2Roomattr.bulkCreate(faces, {transaction: t})
+      ])
     })
-    let querys = [
-      this.addBedByAttrId(attrId, beds),
-      this.addLayoutByAttrId(attrId, layouts),
-      this.addRoomattr2face(attrId, faces)
-    ]
-    return transactionsMiddleware(querys)
   },
-  // 暂不实现
   updateAttr (attr) {
-    return null
+    let {beds, layouts, faces, ...rest} = attr
+    let {rmattrId, ...roomAttr} = rest
+    return sequelize.transaction(async (t) => {
+      beds = beds.map((bed) => Object.assign({attrId: rmattrId}, bed))
+      layouts = layouts.map((layout) => Object.assign({attrId: rmattrId}, layout))
+      faces = faces.map((faceId) => ({roomattrId: rmattrId, faceId}))
+      await Promise.all([
+        Model.Face2Roomattr.destroy({
+          transaction: t,
+          where: {
+            roomattrId: rmattrId
+          }
+        }),
+        Model.Bed.destroy({
+          transaction: t,
+          where: {
+            attrId: rmattrId
+          }
+        }),
+        Model.Layout.destroy({
+          transaction: t,
+          where: {
+            attrId: rmattrId
+          }
+        })
+      ])
+      return Promise.all([
+        Model.RoomAttr.update(roomAttr, {
+          where: {rmattrId},
+          transaction: t
+        }),
+        Model.Bed.bulkCreate(beds, {transaction: t}),
+        Model.Layout.bulkCreate(layouts, {transaction: t}),
+        Model.Face2Roomattr.bulkCreate(faces, {transaction: t})
+      ])
+    })
   },
 
+  roomList (p) {
+    let {page, size, userName, userIdCard, status, roomattrId} = p
+    let [offset, limit] = setPageAndSize(page, size)
+    return
+  }
 }
 export default roomService

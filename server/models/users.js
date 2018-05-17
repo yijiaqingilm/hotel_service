@@ -47,6 +47,14 @@ module.exports = function(sequelize, DataTypes) {
     cardId: {
       type: DataTypes.STRING(50),
       allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    udpatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'users'

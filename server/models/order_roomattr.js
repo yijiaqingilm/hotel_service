@@ -1,38 +1,34 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('face_roomattr', {
-    f_r_id: {
+  return sequelize.define('order_roomattr', {
+    id: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    faceId: {
+    orderId: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       references: {
-        model: 'face',
-        key: 'faceId'
+        model: 'order',
+        key: 'orderId'
       }
     },
-    roomattrId: {
+    roomAttrId: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'roomattr',
         key: 'rmattrId'
       }
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
+    quantity: {
+      type: DataTypes.INTEGER(11),
       allowNull: true
     }
   }, {
-    tableName: 'face_roomattr'
+    tableName: 'order_roomattr'
   });
 };

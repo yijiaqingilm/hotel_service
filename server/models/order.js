@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   return sequelize.define('order', {
     orderId: {
       type: DataTypes.INTEGER(11),
@@ -14,14 +14,6 @@ module.exports = function (sequelize, DataTypes) {
       references: {
         model: 'users',
         key: 'userId'
-      }
-    },
-    rId: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      references: {
-        model: 'room',
-        key: 'rid'
       }
     },
     status: {
@@ -48,7 +40,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },
-    phone: {
+    mobile: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
@@ -83,8 +75,16 @@ module.exports = function (sequelize, DataTypes) {
     payStatus: {
       type: DataTypes.INTEGER(11),
       allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updateAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'order'
-  })
-}
+  });
+};

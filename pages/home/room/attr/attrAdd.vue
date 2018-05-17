@@ -94,9 +94,9 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item :prop="'beds.' + index + '.length'" label="长"
+                                <el-form-item :prop="'beds.' + index + '.height'" label="长"
                                               :rules="{ required: true, message: '床长不能为空', trigger: 'blur'}">
-                                    <el-input type="text" v-model="bed.length"></el-input>
+                                    <el-input type="text" v-model="bed.height"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="2">
@@ -118,22 +118,8 @@
 <script>
   import { globalConst as native } from 'lib/const'
   import { mapState } from 'vuex'
-
-  class Layout {
-    constructor (name = '', quantity = 1) {
-      this.quantity = quantity
-      this.name = name
-    }
-  }
-
-  class Bed {
-    constructor (name = '', quantity = 1, width, length) {
-      this.name = name
-      this.quantity = quantity
-      this.width = width
-      this.height = length
-    }
-  }
+  import attrMixins from './attrMixins'
+  import { Layout, Bed } from 'lib/base'
 
   export default {
     name: '',
@@ -141,6 +127,8 @@
       store.dispatch({
         type: native.doSysRoomFaceList,
         page: -1
+      }).catch((err, code) => {
+        error({message: err, statusCode: code})
       })
     },
     data () {
@@ -169,6 +157,7 @@
         }
       }
     },
+    mixins: [attrMixins],
     methods: {
       submitForm (formName) {
         this.$refs[formName].validate((valid) => {
@@ -188,32 +177,12 @@
           }
         })
       },
-      resetForm (formName) {
-        this.$refs[formName].resetFields()
-      },
-      removeLayout (layout) {
-        let index = this.attr.layouts.indexOf(layout)
-        if (index !== -1) {
-          this.attr.layouts.splice(index, 1)
-        }
-      },
-      addLayout () {
-        this.attr.layouts.push(new Layout())
-      },
-      addBed () {
-        this.attr.beds.push(new Bed())
-      },
-      removeBed (bed) {
-        let index = this.attr.beds.indexOf(bed)
-        if (index !== -1) {
-          this.attr.beds.splice(index, 1)
-        }
-      }
     },
     computed: {
       ...mapState({
         faceList: ({rooms}) => rooms.faceList.data
       })
+
     }
   }
 </script>

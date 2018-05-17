@@ -58,6 +58,12 @@ let apiConfig = [
   new ApiConfig(native.doSysRoomAttrAdd, '/api/sys/room/attr/add'),
   new ApiConfig(native.doSysRoomAttrDel, '/api/sys/room/attr/del'),
   new ApiConfig(native.doSysRoomAttrEdit, '/api/sys/room/attr/edit'),
-  new ApiConfig(native.doSysRoomAttrInfo, '/api/sys/room/attr/info')
+  new ApiConfig(native.doSysRoomAttrInfo, '/api/sys/room/attr/info'),
+
+  new ApiConfig(native.doSysRoomImgList, '/api/sys/room/img/list'),
+  new ApiConfig(native.doSysRoomImgAdd, '/api/sys/room/img/add'),
+  new ApiConfig(native.doSysRoomImgDel, '/api/sys/room/img/del'),
+  new ApiConfig(native.doSysRoomImgEdit, '/api/sys/room/img/edit'),
+  new ApiConfig(native.doSysRoomImgInfo, '/api/sys/room/img/info')
 ]
 export default apiConfig

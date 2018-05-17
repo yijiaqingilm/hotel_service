@@ -31,6 +31,14 @@ module.exports = function(sequelize, DataTypes) {
     status: {
       type: DataTypes.INTEGER(11),
       allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'address'

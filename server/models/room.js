@@ -8,6 +8,14 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
+    uId: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'userId'
+      }
+    },
     img: {
       type: DataTypes.INTEGER(11),
       allowNull: true
@@ -36,18 +44,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.FLOAT,
       allowNull: true
     },
-    quantity: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true
-    },
-    face: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true
-    },
-    tags: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true
-    },
     rooms: {
       type: DataTypes.INTEGER(11),
       allowNull: true
@@ -70,6 +66,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     status: {
       type: DataTypes.INTEGER(11),
+      allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
       allowNull: true
     }
   }, {

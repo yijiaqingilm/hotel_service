@@ -43,6 +43,14 @@ module.exports = function(sequelize, DataTypes) {
     createTime: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updateAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'coupon'

@@ -40,35 +40,45 @@
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="faces"
+                    width="200"
+                    show-overflow-tooltip
                     label="设备信息">
+                <template slot-scope="scope">
+                    {{faceText(scope.row.faces)}}
+                </template>
             </el-table-column>
             <el-table-column
-                    prop="layouts"
                     label="房间布局">
+                <template slot-scope="scope">
+                    {{layoutText(scope.row.layouts)}}
+                </template>
             </el-table-column>
             <el-table-column
-                    prop="beds"
                     label="房间床位">
+                <template slot-scope="scope">
+                    {{bedText(scope.row.beds)}}
+                </template>
             </el-table-column>
             <el-table-column
-                    prop="status"
                     label="状态"
                     width="120">
+                <template slot-scope="scope">
+                    {{roomAttrStatusInfo[scope.row.status].name}}
+                </template>
             </el-table-column>
             <el-table-column
                     label="操作" width="250">
                 <template slot-scope="scope">
                     <el-button
-                            v-if="scope.status===0"
+                            v-if="scope.row.status===roomAttrCode.usable"
                             size="mini"
-                            @click="handleChangeStatus(scope.row,0)">禁用
+                            @click="handleChangeStatus(scope.row,roomAttrCode.disable)">禁用
                     </el-button>
                     <el-button
-                            v-else
+                            v-else-if="scope.row.status===roomAttrCode.disable"
                             size="mini"
                             type="danger"
-                            @click="handleChangeStatus(scope.row,1)">启用
+                            @click="handleChangeStatus(scope.row,roomAttrCode.usable)">启用
                     </el-button>
                     <el-button
                             size="mini"
@@ -94,7 +104,7 @@
 </template>
 
 <script>
-  import { globalConst as native } from 'lib/const'
+  import { globalConst as native, room_attr_status_info, room_attr_status as roomAttrCode } from 'lib/const'
   import { mapState } from 'vuex'
 
   export default {
@@ -117,157 +127,9 @@
           name: '',
         },
         multipleSelection: [],
-        data: [{
-          'attr': {
-            'rmattrId': 2,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test456',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '',
-            'status': 1
-          },
-          'layout': {'id': 1, 'name': '房', 'quantity': 1, 'attrId': 2},
-          'bed': {'bedId': 1, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 2},
-          'f_r_fk': {'f_r_id': 1, 'faceId': 2, 'roomattrId': 2},
-          'face': {'faceId': 2, 'name': '电吹风', 'value': 'dcf', 'icon': 'facility-icon24'}
-        }, {
-          'attr': {
-            'rmattrId': 2,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test456',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '',
-            'status': 1
-          },
-          'layout': {'id': 2, 'name': '厅', 'quantity': 1, 'attrId': 2},
-          'bed': {'bedId': 1, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 2},
-          'f_r_fk': {'f_r_id': 1, 'faceId': 2, 'roomattrId': 2},
-          'face': {'faceId': 2, 'name': '电吹风', 'value': 'dcf', 'icon': 'facility-icon24'}
-        }, {
-          'attr': {
-            'rmattrId': 2,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test456',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '',
-            'status': 1
-          },
-          'layout': {'id': 1, 'name': '房', 'quantity': 1, 'attrId': 2},
-          'bed': {'bedId': 1, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 2},
-          'f_r_fk': {'f_r_id': 2, 'faceId': 7, 'roomattrId': 2},
-          'face': {'faceId': 7, 'name': '冰箱', 'value': 'bx', 'icon': 'facility-icon14'}
-        }, {
-          'attr': {
-            'rmattrId': 2,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test456',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '',
-            'status': 1
-          },
-          'layout': {'id': 2, 'name': '厅', 'quantity': 1, 'attrId': 2},
-          'bed': {'bedId': 1, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 2},
-          'f_r_fk': {'f_r_id': 2, 'faceId': 7, 'roomattrId': 2},
-          'face': {'faceId': 7, 'name': '冰箱', 'value': 'bx', 'icon': 'facility-icon14'}
-        }, {
-          'attr': {
-            'rmattrId': 3,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test123',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '12',
-            'status': 1
-          },
-          'layout': {'id': 3, 'name': '房', 'quantity': 1, 'attrId': 3},
-          'bed': {'bedId': 2, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 3},
-          'f_r_fk': {'f_r_id': 3, 'faceId': 2, 'roomattrId': 3},
-          'face': {'faceId': 2, 'name': '电吹风', 'value': 'dcf', 'icon': 'facility-icon24'}
-        }, {
-          'attr': {
-            'rmattrId': 3,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test123',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '12',
-            'status': 1
-          },
-          'layout': {'id': 4, 'name': '厅', 'quantity': 1, 'attrId': 3},
-          'bed': {'bedId': 2, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 3},
-          'f_r_fk': {'f_r_id': 3, 'faceId': 2, 'roomattrId': 3},
-          'face': {'faceId': 2, 'name': '电吹风', 'value': 'dcf', 'icon': 'facility-icon24'}
-        }, {
-          'attr': {
-            'rmattrId': 3,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test123',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '12',
-            'status': 1
-          },
-          'layout': {'id': 3, 'name': '房', 'quantity': 1, 'attrId': 3},
-          'bed': {'bedId': 2, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 3},
-          'f_r_fk': {'f_r_id': 4, 'faceId': 7, 'roomattrId': 3},
-          'face': {'faceId': 7, 'name': '冰箱', 'value': 'bx', 'icon': 'facility-icon14'}
-        }, {
-          'attr': {
-            'rmattrId': 3,
-            'maxck': null,
-            'size': 123.123,
-            'name': 'test123',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '12',
-            'status': 1
-          },
-          'layout': {'id': 4, 'name': '厅', 'quantity': 1, 'attrId': 3},
-          'bed': {'bedId': 2, 'name': '大床', 'width': 11.5, 'height': 1, 'quantity': 1, 'attrId': 3},
-          'f_r_fk': {'f_r_id': 4, 'faceId': 7, 'roomattrId': 3},
-          'face': {'faceId': 7, 'name': '冰箱', 'value': 'bx', 'icon': 'facility-icon14'}
-        }, {
-          'attr': {
-            'rmattrId': 5,
-            'maxck': null,
-            'size': 100,
-            'name': '用于测试的数据',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '56',
-            'status': 1
-          },
-          'layout': {'id': 5, 'name': '房', 'quantity': 1, 'attrId': 5},
-          'bed': {'bedId': 3, 'name': '大床', 'width': 1.5, 'height': 1, 'quantity': 1, 'attrId': 5},
-          'f_r_fk': {'f_r_id': 5, 'faceId': 8, 'roomattrId': 5},
-          'face': {'faceId': 8, 'name': '暖气', 'value': 'heat', 'icon': 'facility-icon8'}
-        }, {
-          'attr': {
-            'rmattrId': 5,
-            'maxck': null,
-            'size': 100,
-            'name': '用于测试的数据',
-            'minbooking': 1,
-            'maxbooking': 2,
-            'floorRange': '56',
-            'status': 1
-          },
-          'layout': {'id': 6, 'name': '厅', 'quantity': 1, 'attrId': 5},
-          'bed': {'bedId': 3, 'name': '大床', 'width': 1.5, 'height': 1, 'quantity': 1, 'attrId': 5},
-          'f_r_fk': {'f_r_id': 5, 'faceId': 8, 'roomattrId': 5},
-          'face': {'faceId': 8, 'name': '暖气', 'value': 'heat', 'icon': 'facility-icon8'}
-        }]
+        data: [],
+        roomAttrStatusInfo: room_attr_status_info,
+        roomAttrCode: roomAttrCode
       }
     },
     created () {
@@ -293,6 +155,15 @@
       })
     },
     methods: {
+      faceText (faceList) {
+        return faceList.map((face) => face.name).join(',')
+      },
+      layoutText (layoutList) {
+        return layoutList.map((layout) => layout.quantity + layout.name).join(',')
+      },
+      bedText (bedList) {
+        return bedList.map((bed) => bed.quantity + bed.name).join(',')
+      },
       loadData () {
         this.$store.dispatch({
           type: native.doSysRoomAttrList,

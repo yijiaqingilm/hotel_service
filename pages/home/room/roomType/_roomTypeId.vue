@@ -27,6 +27,8 @@
       await store.dispatch({
         type: native.doSysRoomTypeInfo,
         roomTypeId: params.roomTypeId
+      }).catch((err, code) => {
+        error({message: err, errorCode: code})
       })
       return {roomTypeId: params.roomTypeId}
     },

@@ -80,9 +80,8 @@ router.post('/sys/room/face/del', [
 router.post('/sys/room/type/list', [checkPage], (req, res, next) => {
   let p = req.body
   handleErr(req, res)
-  Promise.all([roomService.roomTypeTotal(p), roomService.roomTypeList(p)]).then((values) => {
-    let [total, data] = values
-    res.json(new BaseData({total: total[0].count, data}))
+  roomService.roomTypeList(p).then((data) => {
+    res.json(new BaseData({total: data.count, data: data.rows}))
   }).catch((error) => {
     res.status(500).json(new ErrorData(error))
   })
@@ -93,8 +92,8 @@ router.post('/sys/room/type/info', [
   handleErr(req, res)
   let roomTypeId = req.body.roomTypeId
   roomService.getRoomTypeById(roomTypeId).then((data) => {
-    if (data.length > 0) {
-      res.json(new BaseData(data[0]))
+    if (data) {
+      res.json(new BaseData(data))
     } else {
       res.status(404).json(new ErrorData('请求的roomType信息没找到'))
     }
@@ -133,11 +132,11 @@ router.post('/sys/room/type/edit', [
   })
 })
 router.post('/sys/room/type/del', [
-  check('roomtypeIds', '用户id格式不正确').isArray().isLength({min: 1})
+  check('roomTypeIds', '用户id格式不正确').isArray().isLength({min: 1})
 ], (req, res, next) => {
   handleErr(req, res)
-  let roomtypeIds = req.body.roomtypeIds
-  roomService.delRoomTypeByIds(roomtypeIds).then((data) => {
+  let roomTypeIds = req.body.roomTypeIds
+  roomService.delRoomTypeByIds(roomTypeIds).then((data) => {
     res.json(new BaseData(data))
   }).catch((error) => {
     res.status(500).json(new ErrorData(error))
@@ -147,9 +146,8 @@ router.post('/sys/room/type/del', [
 router.post('/sys/room/tag/list', [checkPage], (req, res, next) => {
   let p = req.body
   handleErr(req, res)
-  Promise.all([roomService.tagTotal(p), roomService.tagList(p)]).then((values) => {
-    let [total, data] = values
-    res.json(new BaseData({total: total[0].count, data}))
+  roomService.tagList(p).then((data) => {
+    res.json(new BaseData({total: data.count, data: data.rows}))
   }).catch((error) => {
     res.status(500).json(new ErrorData(error))
   })
@@ -160,8 +158,8 @@ router.post('/sys/room/tag/info', [
   handleErr(req, res)
   let tagId = req.body.tagId
   roomService.getTagById(tagId).then((data) => {
-    if (data.length > 0) {
-      res.json(new BaseData(data[0]))
+    if (data) {
+      res.json(new BaseData(data))
     } else {
       res.status(404).json(new ErrorData('请求的tag信息没找到'))
     }
@@ -210,16 +208,14 @@ router.post('/sys/room/tag/del', [
     res.status(500).json(new ErrorData(error))
   })
 })
+
 router.post('/sys/room/attr/list', [checkPage], (req, res, next) => {
   let p = req.body
   handleErr(req, res)
-  Promise.all([roomService.attrTotal(p), roomService.attrList(p)]).then((values) => {
-    let [total, data] = values
-    data && data.forEach((row) => {
-      // let attr = result
-    })
-    res.json(new BaseData({total: total[0].count, data}))
+  roomService.attrList(p).then((data) => {
+    res.json(new BaseData({total: data.count, data: data.rows}))
   }).catch((error) => {
+    console.log('是否跑错', error)
     res.status(500).json(new ErrorData(error))
   })
 })
@@ -229,8 +225,8 @@ router.post('/sys/room/attr/info', [
   handleErr(req, res)
   let attrId = req.body.attrId
   roomService.getAttrById(attrId).then((data) => {
-    if (data.length > 0) {
-      res.json(new BaseData(data[0]))
+    if (data) {
+      res.json(new BaseData(data))
     } else {
       res.status(404).json(new ErrorData('请求的attr info信息没找到'))
     }
@@ -280,4 +276,191 @@ router.post('/sys/room/attr/del', [
   })
 })
 
+router.post('/sys/room/img/list', [checkPage], (req, res, next) => {
+  let p = req.body
+  handleErr(req, res)
+  roomService.imgList(p).then((data) => {
+    res.json(new BaseData({total: data.count, data: data.rows}))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/img/info', [
+  check('imgId', 'imgId格式不正确').isInt()
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgId = req.body.imgId
+  roomService.getImgById(imgId).then((data) => {
+    if (data) {
+      res.json(new BaseData(data))
+    } else {
+      res.status(404).json(new ErrorData('img info信息没找到'))
+    }
+
+  }).catch((error) => {
+    res.json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/img/add', [
+  check('title', '标题不能为空').isLength({min: 1}),
+  check('url', 'url不能为空').isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let attr = req.body
+  roomService.addImg(attr).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/img/edit', [
+  check('title', '标题不能为空').isLength({min: 1}),
+  check('url', 'url不能为空').isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let img = req.body
+  roomService.updateImg(img).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/img/del', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+
+router.post('/sys/room/list', [checkPage], (req, res, next) => {
+  let p = req.body
+  handleErr(req, res)
+  roomService.imgList(p).then((data) => {
+    res.json(new BaseData({total: data.count, data: data.rows}))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/info', [
+  check('imgId', 'imgId格式不正确').isInt()
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgId = req.body.imgId
+  roomService.getImgById(imgId).then((data) => {
+    if (data) {
+      res.json(new BaseData(data))
+    } else {
+      res.status(404).json(new ErrorData('img info信息没找到'))
+    }
+
+  }).catch((error) => {
+    res.json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/add', [
+  check('title', '标题不能为空').isLength({min: 1}),
+  check('url', 'url不能为空').isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let attr = req.body
+  roomService.addImg(attr).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/edit', [
+  check('title', '标题不能为空').isLength({min: 1}),
+  check('url', 'url不能为空').isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let img = req.body
+  roomService.updateImg(img).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/del', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/checkIn', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/checkOut', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/disable', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/enabled', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/clear', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
+router.post('/sys/room/change', [
+  check('imgIds', 'imgIds格式不正确').isArray().isLength({min: 1})
+], (req, res, next) => {
+  handleErr(req, res)
+  let imgIds = req.body.imgIds
+  roomService.delImgByIds(imgIds).then((data) => {
+    res.json(new BaseData(data))
+  }).catch((error) => {
+    res.status(500).json(new ErrorData(error))
+  })
+})
 export default router

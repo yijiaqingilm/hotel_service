@@ -8,44 +8,12 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    uId: {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      references: {
-        model: 'users',
-        key: 'userId'
-      }
-    },
     img: {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },
-    checkInTime: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    checkOutTime: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     desc: {
       type: DataTypes.TEXT,
-      allowNull: true
-    },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: true
-    },
-    vipprice: {
-      type: DataTypes.FLOAT,
-      allowNull: true
-    },
-    oprice: {
-      type: DataTypes.FLOAT,
-      allowNull: true
-    },
-    rooms: {
-      type: DataTypes.INTEGER(11),
       allowNull: true
     },
     roomTypeId: {
@@ -66,7 +34,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     status: {
       type: DataTypes.INTEGER(11),
-      allowNull: true
+      allowNull: true,
+      defaultValue: '1'
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -74,6 +43,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     updatedAt: {
       type: DataTypes.DATE,
+      allowNull: true
+    },
+    orderNo: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    name: {
+      type: DataTypes.STRING(255),
       allowNull: true
     }
   }, {

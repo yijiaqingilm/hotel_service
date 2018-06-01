@@ -33,7 +33,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="sr-only" for="form-last-name">密码</label>
-                                        <input type="password" v-model="user.password"
+                                        <input type="password" v-model="user.pwd"
                                                placeholder="密码..."
                                                class="form-last-name form-control" id="form-last-name">
                                     </div>
@@ -50,24 +50,32 @@
 </template>
 <script>
   import { globalConst as native } from '../lib/const'
+  import jwt from 'jsonwebtoken'
   import md5 from 'js-md5'
 
+  let client_secret = 'secret'
   export default {
     name: 'login',
     data () {
       return {
         user: {
           name: '',
-          password: ''
+          pwd: '',
+          code: '123456'
         }
       }
+    },
+    created () {
+      this.$store.dispatch({
+        type: native.doSysGetCode
+      })
+      console.log('mde', md5('yijiaqing'))
     },
     methods: {
       submit () {
         this.$store.dispatch({
-          type: native.doSysUserList,
-          name: this.user.name,
-          password: md5(this.user.password)
+          type: native.doSysLogin,
+          info: jwt.sign(this.user, client_secret)
         }).then((data) => {
           this.$router.push('home')
         })

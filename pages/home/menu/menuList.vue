@@ -75,14 +75,12 @@
       }
     },
     created () {
-      console.log(native)
       this.$store.dispatch({
         type: native.doSysRuleList
       })
     },
     methods: {
       onSubmit () {
-        console.log('submit!')
         this.$store.dispatch({
           type: native.doSysRuleSeach,
           ...this.formInline
@@ -101,7 +99,6 @@
         this.multipleSelection = val
       },
       handleEdit (index, row) {
-        console.log(index, row)
         this.$router.push(`/home/menu/${row.rulesId}`)
       },
       handleDelete (index, row) {

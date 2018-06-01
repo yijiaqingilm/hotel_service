@@ -16,10 +16,13 @@ import room2img from '../models/room_img'
 import room2tag from '../models/room_tag'
 import order2roomattr from '../models/order_roomattr'
 import order from '../models/order'
+import sysroles2rules from '../models/sys_roles_rules'
+import order2room from '../models/order_room'
 
 const SysUser = sequelize.import('sys_users', sysUsers)
 const SysRole = sequelize.import('sys_roles', sysRoles)
 const SysRule = sequelize.import('sys_rule', sysRules)
+const SysRole2Rule = sequelize.import('sys_role_rule', sysroles2rules)
 const RoomType = sequelize.import('room_type', roomtype)
 const Tag = sequelize.import('tags', tag)
 const Img = sequelize.import('img', img)
@@ -34,6 +37,12 @@ const Room2Img = sequelize.import('room2img', room2img)
 const Room2Tag = sequelize.import('room2tag', room2tag)
 const Order2RoomAttr = sequelize.import('order2roomattr', order2roomattr)
 const Order = sequelize.import('order', order)
+const Order2Room = sequelize.import('order2room', order2room)
+/* 系统用户 权限关系映射*/
+SysRule.belongsToMany(SysRole, {through: SysRole2Rule, foreignKey: 'rules_id'})
+SysRole.belongsToMany(SysRule, {through: SysRole2Rule, foreignKey: 'roles_id'})
+SysRole.hasMany(SysUser, {foreignKey: 'roles_id'})
+SysUser.belongsTo(SysRole, {foreignKey: 'roles_id'})
 /* roomAttr 关系映射*/
 RoomAttr.hasMany(Layout, {foreignKey: 'attrId'})
 RoomAttr.hasMany(Bed, {foreignKey: 'attrId'})
@@ -44,15 +53,22 @@ Order.belongsToMany(RoomAttr, {through: Order2RoomAttr, foreignKey: 'orderId'})
 
 /* room 关系映射*/
 RoomAttr.hasMany(Room, {foreignKey: 'roomAttrId'})
-User.hasMany(Room, {foreignKey: 'uId'})
+Room.belongsTo(RoomAttr, {foreignKey: 'roomAttrId', as: 'roomAttr'})
 Room.belongsToMany(Img, {through: Room2Img, foreignKey: 'room_id'})
 Img.belongsToMany(Room, {through: Room2Img, foreignKey: 'img_id'})
 Room.belongsToMany(Tag, {through: Room2Tag, foreignKey: 'room_id'})
 Tag.belongsToMany(Room, {through: Room2Tag, foreignKey: 'tag_id'})
+
+/* 订单 关系映射*/
+Order.belongsToMany(Room, {through: Order2Room, foreignKey: 'order_id', as: 'room'})
+Room.belongsToMany(Order, {through: Order2Room, foreignKey: 'room_id'})
+Order.belongsTo(User, {foreignKey: 'uId', as: 'user'})
+
 export {
   SysUser,
   SysRole,
   SysRule,
+  SysRole2Rule,
   RoomType,
   Tag,
   Img,
@@ -66,5 +82,6 @@ export {
   Room2Img,
   Room2Tag,
   Order2RoomAttr,
-  Order
+  Order,
+  Order2Room
 }

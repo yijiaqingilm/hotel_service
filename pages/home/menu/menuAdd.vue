@@ -21,6 +21,9 @@
             <el-form-item label="菜单地址" prop="url">
                 <el-input type="text" v-model="menu.url" auto-complete="off"></el-input>
             </el-form-item>
+            <el-form-item label="api地址" prop="apiUrl">
+                <el-input type="text" v-model="menu.apiUrl" auto-complete="off"></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('menu')">提交</el-button>
                 <el-button @click="resetForm('menu')">重置</el-button>
@@ -57,6 +60,9 @@
           url: [
             {validator: validate('菜单地址不能为空'), trigger: 'blur'}
           ],
+          apiUrl: [
+            {validator: validate('api地址不能为空'), trigger: 'blur'}
+          ]
         },
         menuProps: {
           value: 'value',

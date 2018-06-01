@@ -45,6 +45,22 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    deposit: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    oprice: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    vipprice: {
+      type: DataTypes.FLOAT,
+      allowNull: true
     }
   }, {
     tableName: 'roomattr'

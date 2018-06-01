@@ -148,7 +148,7 @@ module.exports = {
     // 禁用 eval()
     'no-eval': 2,
     // 禁止扩展原生类型
-    'no-extend-native': 2,
+    'no-extend-native': 0,
     // 禁止不必要的 .bind() 调用
     'no-extra-bind': 2,
     // 禁用不必要的标签

@@ -23,6 +23,14 @@ module.exports = function(sequelize, DataTypes) {
         model: 'tags',
         key: 'tagId'
       }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'room_tag'

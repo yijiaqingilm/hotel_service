@@ -21,7 +21,11 @@ const orderSource = {
 const order_status = {
   pay: 1,
   noPay: 0,
-  expire: 2
+  expire: 2,
+  // 押金未支付
+  depositUnPaid: 3,
+  // 押金已支付
+  depositPaid: 4
 }
 const room_status = {
   usable: 1,
@@ -30,11 +34,27 @@ const room_status = {
   clearing: 3,
   checkIn: 4,
   booking: 5,
+  // 房间锁定状态 等待入住
+  locking: 6
+}
+const userType = {
+  ordinary: 0,
+  vip: 1,
+  vip2: 2
+}
+const idModel = {
+  cardId: '0',
+  vipCard: '1',
+  vipMobile: '2'
 }
 const PAGESIZE = 10
 export {
   STATUS_CODE,
   PAGESIZE,
   room_attr_status,
-  orderSource
+  orderSource,
+  room_status,
+  userType,
+  order_status,
+  idModel
 }

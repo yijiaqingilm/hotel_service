@@ -5,6 +5,7 @@ function resolve (dir) {
 }
 
 module.exports = {
+  cache: false,
   plugins: [{
     src: '~plugins/elementUI',
     ssr: true
@@ -47,7 +48,7 @@ module.exports = {
       Object.assign(config.resolve.alias, {
         'lib': resolve('lib'),
         'api': resolve('api'),
-        'components': resolve('src/components')
+        'components': resolve('components')
       })
     }
   }

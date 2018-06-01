@@ -1,6 +1,6 @@
 import api from '../../api/api'
-import { isEmptyObject } from '../../lib/utils'
-import { globalConst as native, mutationNames, pageSize as size } from '../../lib/const'
+import { isEmptyObject, margeMutations } from '../../lib/utils'
+import { FAILURE, globalConst as native, mutationNames, pageSize as size, REQUEST, SUCCESS } from '../../lib/const'
 import Vue from 'vue'
 import { applyClientMiddleware } from '../index'
 
@@ -14,10 +14,16 @@ let state = {
   attrList: [],
   attr: {},
   imgList: [],
-  img: {}
+  img: {},
+  roomList: [],
+  roomListAll: [],
+  room: {}
 }
 let getters = {}
 let actions = {
+  [native.doSysCheckInInfo] ({state}, refs) {
+    return applyClientMiddleware(api.doSysCheckInInfo)(refs)
+  },
   [native.doSysRoomFaceList] ({state}, refs) {
     return applyClientMiddleware(api.doSysRoomFaceList)(refs)
   },
@@ -111,7 +117,50 @@ let actions = {
   },
   [native.doSysRoomImgAdd] ({state}, refs) {
     return applyClientMiddleware(api.doSysRoomImgAdd)(refs)
-  }
+  },
+
+  [native.doSysRoomList] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomList)(refs)
+  },
+  [native.doSysRoomListAll] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomListAll)(refs)
+  },
+  [native.doSysRoomInfo] ({state}, refs) {
+    let {roomId} = refs
+    if (!state.room[roomId]) {
+      return applyClientMiddleware(api.doSysRoomInfo)(refs)
+    }
+  },
+  [native.doSysRoomEdit] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomEdit)(refs)
+  },
+  [native.doSysRoomDel] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomDel)(refs)
+  },
+  [native.doSysRoomAdd] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomAdd)(refs)
+  },
+  [native.doSysRoomLocked] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomLocked)(refs)
+  },
+  [native.doSysRoomCheckIn] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomCheckIn)(refs)
+  },
+  [native.doSysRoomCheckOut] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomCheckOut)(refs)
+  },
+  [native.doSysRoomDisable] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomDisable)(refs)
+  },
+  [native.doSysRoomEnabled] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomEnabled)(refs)
+  },
+  [native.doSysRoomClear] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomClear)(refs)
+  },
+  [native.doSysRoomChange] ({state}, refs) {
+    return applyClientMiddleware(api.doSysRoomChange)(refs)
+  },
 }
 let mutations = {
   [mutationNames.doSysRoomFaceList_request] (state, {refs}) {},
@@ -257,7 +306,45 @@ let mutations = {
   [mutationNames.doSysRoomImgAdd_success] (state, {data}) {
   },
   [mutationNames.doSysRoomImgAdd_failure] (state, {error}) {},
+  /* ---room--- */
+  [mutationNames.doSysRoomList_success] (state, {data}) {
+    state.roomList = data
+  },
+  [mutationNames.doSysRoomListAll_success] (state, {data}) {
+    state.roomListAll = data
+  },
+  [mutationNames.doSysRoomInfo_success] (state, {data, refs}) {
+    let {roomId} = refs
+    Vue.set(state.room, roomId, data)
+  },
+  [mutationNames.doSysRoomEdit_success] (state, {data, refs}) {
+    let {rid} = refs
+    Vue.delete(state.room, rid)
+  },
+  [mutationNames.doSysRoomDel_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomAdd_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomLocked_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomCheckIn_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomCheckOut_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomDisable_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomEnabled_success] (state, {data}) {
+
+  },
+  [mutationNames.doSysRoomClear_success] (state, {data}) {
+  },
+  [mutationNames.doSysRoomChange_success] (state, {data}) {
+  },
+  [mutationNames.doSysCheckInInfo_success] (state, {data}) {
+  }
 }
+
+mutations = Object.assign(margeMutations(actions), mutations)
 
 export {
   state,

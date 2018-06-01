@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     status: {
       type: DataTypes.INTEGER(11),
-      allowNull: false
+      allowNull: true
     },
     total: {
       type: DataTypes.FLOAT,
@@ -30,11 +30,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     sktime: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     ottime: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     payType: {
       type: DataTypes.INTEGER(11),
@@ -42,7 +42,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     mobile: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     contact: {
       type: DataTypes.STRING(255),
@@ -60,10 +60,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    createTime: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
     remark: {
       type: DataTypes.STRING(255),
       allowNull: true
@@ -80,9 +76,26 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true
     },
-    updateAt: {
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    checkInTime: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    checkOutTime: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    deposit: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    days: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      defaultValue: '1'
     }
   }, {
     tableName: 'order'

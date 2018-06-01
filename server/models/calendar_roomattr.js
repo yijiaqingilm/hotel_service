@@ -1,38 +1,42 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('room_img', {
+  return sequelize.define('calendar_roomattr', {
     id: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    room_id: {
+    cid: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       references: {
-        model: 'room',
-        key: 'rid'
+        model: 'calendar',
+        key: 'id'
       }
     },
-    img_id: {
+    rid: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       references: {
-        model: 'img',
-        key: 'imgId'
+        model: 'roomattr',
+        key: 'rmattrId'
       }
     },
-    createdAt: {
-      type: DataTypes.DATE,
+    price: {
+      type: DataTypes.FLOAT,
       allowNull: true
     },
-    updatedAt: {
-      type: DataTypes.DATE,
+    vipprice: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    oprice: {
+      type: DataTypes.FLOAT,
       allowNull: true
     }
   }, {
-    tableName: 'room_img'
+    tableName: 'calendar_roomattr'
   });
 };

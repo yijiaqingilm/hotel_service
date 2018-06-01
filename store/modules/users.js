@@ -1,5 +1,5 @@
 import api from '../../api/api'
-import { isEmptyObject } from '../../lib/utils'
+import { isEmptyObject, margeMutations } from '../../lib/utils'
 import { globalConst as native, mutationNames, pageSize as size } from '../../lib/const'
 import Vue from 'vue'
 import { applyClientMiddleware } from '../index'
@@ -11,10 +11,21 @@ let state = {
   rule: {},
   roleList: [],
   roleListAll: [],
-  role: {}
+  role: {},
+  token: '',
+  loginUserInfo: {}
 }
 let getters = {}
 let actions = {
+  [native.doSysCheckVip] ({state}, refs) {
+    return applyClientMiddleware(api.doSysCheckVip)(refs)
+  },
+  [native.doSysGetCode] ({state}, refs) {
+    return applyClientMiddleware(api.doSysGetCode)(refs)
+  },
+  [native.doSysLogin] ({state}, refs) {
+    return applyClientMiddleware(api.doSysLogin)(refs)
+  },
   [native.doSysRuleSeach] ({state}, refs) {
     return applyClientMiddleware(api.doSysRuleSeach)(refs)
   },
@@ -79,6 +90,12 @@ let actions = {
   }
 }
 let mutations = {
+  [mutationNames.doSysCheckVip_success] (state, {data}) {
+  },
+  [mutationNames.doSysLogin_success] (state, {data}) {
+    state.loginUserInfo = data.user
+    state.token = data.token
+  },
   [mutationNames.doSysUserList_request] (state, {refs}) {},
   [mutationNames.doSysUserList_success] (state, {data}) {
     console.log('success', data)
@@ -203,6 +220,8 @@ let mutations = {
   [mutationNames.doSysRoleEdit_failure] (state, {error}) {},
 
 }
+
+mutations = Object.assign(margeMutations(actions), mutations)
 
 export {
   state,

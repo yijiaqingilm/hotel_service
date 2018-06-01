@@ -28,6 +28,14 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    apiUrl: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    weight: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true
     }
   }, {
     tableName: 'sys_rules'

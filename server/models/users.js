@@ -10,7 +10,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     type: {
       type: DataTypes.INTEGER(11),
-      allowNull: true
+      allowNull: true,
+      defaultValue: '0'
     },
     name: {
       type: DataTypes.STRING(255),
@@ -52,8 +53,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true
     },
-    udpatedAt: {
+    updatedAt: {
       type: DataTypes.DATE,
+      allowNull: true
+    },
+    vipCardId: {
+      type: DataTypes.STRING(255),
       allowNull: true
     }
   }, {
